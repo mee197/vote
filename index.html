@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>「律·绘」商法导论海报设计展 - 投票系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #4a6fa5, #2c5282, #1a365d);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eaeaea;
+        }
+        h1 {
+            color: #2c5282;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .subtitle {
+            color: #4a6fa5;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        .intro-box {
+            background: #f8f9fa;
+            border-left: 5px solid #4a6fa5;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 0 10px 10px 0;
+        }
+        .rules-box {
+            background: #fff8e1;
+            border-left: 5px solid #ffb300;
+            padding: 18px;
+            margin-bottom: 25px;
+            border-radius: 0 10px 10px 0;
+        }
+        h2 {
+            color: #2c5282;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        p, li {
+            margin-bottom: 10px;
+            color: #555;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        .counter-bar {
+            background: #2c5282;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(44, 82, 130, 0.3);
+        }
+        .counter {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        .counter span {
+            color: #ffd54f;
+        }
+        .submit-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+        }
+        .submit-btn:hover {
+            background: #388e3c;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+        }
+        .submit-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .poster-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s;
+            position: relative;
+            border: 3px solid transparent;
+        }
+        .poster-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+        .poster-card.selected {
+            border-color: #4caf50;
+        }
+        .poster-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #4caf50;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 3px 8px rgba(76, 175, 80, 0.5);
+        }
+        .poster-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .poster-img:hover {
+            transform: scale(1.03);
+        }
+        .poster-title {
+            padding: 15px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            background: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        .modal-img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            z-index: 1001;
+            transition: color 0.3s;
+        }
+        .close-modal:hover {
+            color: #ffd54f;
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        .share-box {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .share-link {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: 1px dashed #4caf50;
+            font-family: monospace;
+            word-break: break-all;
+            margin-top: 10px;
+            color: #2c5282;
+        }
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .counter-bar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>「律·绘」商法导论海报设计展</h1>
+            <div class="subtitle">海报设计作品在线投票系统</div>
+        </header>
+        
+        <div class="intro-box">
+            <h2>展览介绍</h2>
+            <p>本次海报展以商法导论课程为核心，涵盖雇佣法、数据保护法、消费者法等多个领域。学生将所学知识进行筛选、提炼、重组，并以视觉化方式呈现，展现了出色的信息整合与视觉表达能力。</p>
+        </div>
+        
+        <div class="rules-box">
+            <h2>投票规则</h2>
+            <ul>
+                <li><strong>投票方式：</strong>多选，每位评委可投 <strong>15 票</strong></li>
+                <li><strong>操作方式：</strong>点击海报卡片即可选中/取消，选中的海报会显示绿色边框和勾选图标</li>
+                <li><strong>查看详情：</strong>点击海报图片可放大查看详情</li>
+                <li><strong>提交投票：</strong>浏览完所有作品后，在页面底部查看已选数量并提交</li>
+                <li><strong>展览安排：</strong>优秀作品将在教学楼走廊公开展出</li>
+            </ul>
+        </div>
+        
+        <div class="counter-bar">
+            <div class="counter">已选择：<span id="selectedCount">0</span> / 15 票</div>
+            <button class="submit-btn" id="submitBtn" disabled>提交投票</button>
+        </div>
+        
+        <div class="gallery" id="gallery">
+            <!-- 海报卡片将通过JavaScript动态生成 -->
+        </div>
+        
+        <div class="share-box">
+            <h3>分享投票链接</h3>
+            <p>复制下方链接发送给学生即可开始投票：</p>
+            <div class="share-link" id="shareLink">加载中...</div>
+            <p style="margin-top: 10px; font-size: 0.9rem; color: #666;">此页面为静态HTML，无需登录，可在任何设备上访问投票</p>
+        </div>
+        
+        <footer>
+            <p>「律·绘」商法导论海报设计展投票系统 &copy; 2025</p>
+            <p>技术支持：静态HTML + JavaScript | 无需服务器与数据库</p>
+        </footer>
+    </div>
+    
+    <!-- 图片放大模态框 -->
+    <div class="modal" id="imageModal">
+        <button class="close-modal" id="closeModal">&times;</button>
+        <div class="modal-content">
+            <img class="modal-img" id="modalImage" src="" alt="放大查看">
+        </div>
+    </div>
+    
+    <script>
+        // 海报数据 - 从实际文件生成
+        const posterFiles = [
+            "consumer (1).jpg",
+            "consumer law (4).jpg",
+            "Consumer Law.jpg",
+            "Consumer Protection Law海报.jpg",
+            "Data Protection.jpg",
+            "DataProtection海报参评HRM2402刘橙汐、肖潘悦.jpg",
+            "Date Protection海报.jpg",
+            "employment law    Yi HongYe-Wang Jiabao-Yin Zhiyang(2).jpg",
+            "Employment law (3).jpg",
+            "Employment Law (5).jpg",
+            "Employment Law A2403李欣媛.jpg",
+            "Employment Law F2401 熊泽鸣，齐少坤，卢家林，冯睿涵.jpg",
+            "Employment Law 海报.jpg",
+            "Employment海报参评HRM2402刘橙汐、肖潘悦.jpg",
+            "Study on UK Employment Law.jpg",
+            "THE BRITHISH CONSUMER LAW_20260511_121937_0000.jpg",
+            "UK Consumer Law.海报 2.jpg",
+            "UK Consumer Rights Protection Know Your Shopping Rights...",
+            "UK Contract Law.jpg",
+            "UK Employment Law.jpg",
+            "UK Primary & Secondary Legislation.jpg",
+            "UK数据保护法案2025-111 (1).jpg",
+            "劳动法海报 副本_20260511_121912_0000.jpg",
+            "商务沟通技巧海报.jpg",
+            "商法 (1).jpg",
+            "商法导论海报 (2).jpg",
+            "商法导论海报终.jpg",
+            "梁皓凌.pdf .jpg",
+            "海报 (2).jpg",
+            "海报1 consumer law.jpg",
+            "海报1 Consumer Law_夏静晗.jpg",
+            "海报1-employment law.jpg",
+            "海报2 (1).jpg",
+            "海报2 Employment Law.jpg",
+            "海报2-consumer law.jpg",
+            "海报2.jpg",
+            "海报参评 HRM2401 祖怡宁 赵昱琪 高可欣.jpg",
+            "海报参评 HRM2401 祖怡宁 高可欣 赵昱琪.jpg",
+            "海报参评 HRM2402 李鑫玥舒菁雯邹蕙璟（Data Protection）.jpg",
+            "海报参评 HRM2402 李鑫玥舒菁雯邹蕙璟（Employment Law）.jpg",
+            "海报参评 人力HRM2401 赵艺萌林馨可毕恒源.jpg",
+            "海报参评+GTB2404+刘羽阳 (2).jpg",
+            "海报参评+GTB2404+刘羽阳.jpg",
+            "海报参评GTB2404唐煜凯.jpg",
+            "海报参评HRM2402 于奇淼.png",
+            "海报参评HRM2402于奇淼.png",
+            "海报参评HRM2403崔晓彤.jpg",
+            "海报参选GTB2403杨添乐pdf.jpg"
+        ];
+        
+        // 特殊处理：分页海报（两个文件夹）
+        const multiPagePosters = [
+            {
+                name: "海报参评 人力HRM2401 赵艺萌林馨可毕恒源",
+                pages: ["page_001.jpg", "page_002.jpg"]
+            },
+            {
+                name: "海报参选GTB2403杨添乐pdf",
+                pages: ["page_001.jpg", "page_002.jpg"]
+            }
+        ];
+        
+        const MAX_VOTES = 15;
+        let selectedPosters = new Set();
+        const gallery = document.getElementById('gallery');
+        const selectedCountEl = document.getElementById('selectedCount');
+        const submitBtn = document.getElementById('submitBtn');
+        const shareLinkEl = document.getElementById('shareLink');
+        const imageModal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const closeModal = document.getElementById('closeModal');
+        
+        // 生成海报卡片
+        function generatePosterCards() {
+            // 单个文件海报
+            posterFiles.forEach((filename, index) => {
+                const posterId = `poster_${index}`;
+                const card = document.createElement('div');
+                card.className = 'poster-card';
+                card.id = posterId;
+                card.dataset.filename = filename;
+                
+                // 提取标题（去掉扩展名和部分字符）
+                let title = filename.replace(/\.[^/.]+$/, ""); // 去掉扩展名
+                title = title.replace(/海报参评|海报参选|海报|\.jpg|\.png|\([0-9]+\)/g, "").trim();
+                if (title.length > 30) title = title.substring(0, 30) + '...';
+                if (!title) title = `海报作品 ${index + 1}`;
+                
+                card.innerHTML = `
+                    <img class="poster-img" src="images/${encodeURIComponent(filename)}" alt="${title}" loading="lazy">
+                    <div class="poster-title">${title}</div>
+                `;
+                
+                card.addEventListener('click', () => toggleSelection(posterId));
+                card.querySelector('.poster-img').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal(`images/${encodeURIComponent(filename)}`);
+                });
+                
+                gallery.appendChild(card);
+            });
+            
+            // 多页海报
+            multiPagePosters.forEach((poster, index) => {
+                const posterId = `multipage_${index}`;
+                const card = document.createElement('div');
+                card.className = 'poster-card';
+                card.id = posterId;
+                card.dataset.multipage = JSON.stringify(poster);
+                
+                const firstPage = `images/${encodeURIComponent(poster.name + '_pages')}/${encodeURIComponent(poster.pages[0])}`;
+                
+                card.innerHTML = `
+                    <img class="poster-img" src="${firstPage}" alt="${poster.name}" loading="lazy">
+                    <div class="poster-title">${poster.name} (${poster.pages.length}页)</div>
+                `;
+                
+                card.addEventListener('click', () => toggleSelection(posterId));
+                card.querySelector('.poster-img').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openModal(firstPage);
+                });
+                
+                gallery.appendChild(card);
+            });
+            
+            // 设置分享链接
+            shareLinkEl.textContent = window.location.href;
+        }
+        
+        // 切换选择状态
+        function toggleSelection(posterId) {
+            const card = document.getElementById(posterId);
+            
+            if (selectedPosters.has(posterId)) {
+                selectedPosters.delete(posterId);
+                card.classList.remove('selected');
+            } else {
+                if (selectedPosters.size >= MAX_VOTES) {
+                    alert(`最多只能选择 ${MAX_VOTES} 个作品`);
+                    return;
+                }
+                selectedPosters.add(posterId);
+                card.classList.add('selected');
+            }
+            
+            updateCounter();
+        }
+        
+        // 更新计数器
+        function updateCounter() {
+            const count = selectedPosters.size;
+            selectedCountEl.textContent = count;
+            submitBtn.disabled = count === 0;
+            
+            if (count === MAX_VOTES) {
+                selectedCountEl.style.color = '#ff6b6b';
+            } else {
+                selectedCountEl.style.color = '#ffd54f';
+            }
+        }
+        
+        // 打开图片模态框
+        function openModal(imageSrc) {
+            modalImage.src = imageSrc;
+            imageModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // 关闭模态框
+        function closeImageModal() {
+            imageModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // 提交投票
+        function submitVote() {
+            if (selectedPosters.size === 0) {
+                alert('请至少选择一个作品');
+                return;
+            }
+            
+            const selectedTitles = Array.from(selectedPosters).map(id => {
+                const card = document.getElementById(id);
+                if (card.dataset.multipage) {
+                    const poster = JSON.parse(card.dataset.multipage);
+                    return poster.name;
+                } else {
+                    return card.dataset.filename;
+                }
+            });
+            
+            const voteData = {
+                timestamp: new Date().toISOString(),
+                count: selectedPosters.size,
+                selected: selectedTitles,
+                userAgent: navigator.userAgent
+            };
+            
+            // 在实际应用中，这里应该发送到服务器
+            // 现在模拟提交
+            const dataStr = JSON.stringify(voteData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `投票结果_${new Date().getTime()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert(`投票成功！您选择了 ${selectedPosters.size} 个作品。投票结果已下载为JSON文件。`);
+            
+            // 重置选择
+            selectedPosters.clear();
+            document.querySelectorAll('.poster-card.selected').forEach(card => {
+                card.classList.remove('selected');
+            });
+            updateCounter();
+        }
+        
+        // 事件监听
+        submitBtn.addEventListener('click', submitVote);
+        closeModal.addEventListener('click', closeImageModal);
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) closeImageModal();
+        });
+        
+        // 键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeImageModal();
+        });
+        
+        // 初始化
+        generatePosterCards();
+        updateCounter();
+        
+        // 页面加载完成提示
+        window.addEventListener('load', () => {
+            console.log('投票页面加载完成，共加载海报作品：', posterFiles.length + multiPagePosters.length);
+        });
+    </script>
+</body>
+</html>
